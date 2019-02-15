@@ -39,9 +39,11 @@ class ThreadPool {
         return threadsActive ? queue.remove() : null;
     }
     public synchronized void execute(Runnable r) {
-        queue.add(r);
-        if (queue.size() == 1) {
-            notify();
+        if (threadsActive) {
+            queue.add(r);
+            if (queue.size() == 1) {
+                notify();
+            }
         }
     }
 
