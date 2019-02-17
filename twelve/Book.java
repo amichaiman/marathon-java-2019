@@ -22,4 +22,5 @@ public class Book {
     public double getWidth() {
         return width;
     }
+
 }

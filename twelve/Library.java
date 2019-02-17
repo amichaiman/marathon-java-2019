@@ -1,57 +1,61 @@
 package twelve;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class Library {
-    private List<Shelf> shelfs;
+    private List<Shelf> shelves;
 
-    public Library() {
-        shelfs = new ArrayList<>();
+    public List<Shelf> getShelves() {
+        return shelves;
     }
 
-    public List<Shelf> getShelfs() {
-        return shelfs;
-    }
-    int getShelf(String title) {
-        for (Shelf s : shelfs) {
-            if (s.hasBook(title)) {
-                return shelfs.indexOf(s);
+    public int getShelf(String title) {
+        for (Shelf s : shelves) {
+            for (Book b : s.getBooks()) {
+                if (b.getTitle().equals(title)) {
+                    return shelves.indexOf(s);
+                }
             }
         }
         return -1;
     }
-    Iterator<Book> iterator() {
-        return new LibraryIterator();
-    }
-    class LibraryIterator implements Iterator<Book> {
-        private Shelf currentShelf;
-        private List<Book> booksInCurrentShelf;
-        private int indexInShelf;
 
-        public LibraryIterator() {
-            currentShelf = shelfs.get(0);
-            booksInCurrentShelf = currentShelf.getBooks();
-            indexInShelf=0;
-        }
+    public Iterator<Book> iterator() {
+        return new MyIterator();
+    }
+
+    class MyIterator implements Iterator<Book> {
+        private int shelfIndex;
+        private int bookIndex;
 
         @Override
         public boolean hasNext() {
-            return shelfs.indexOf(currentShelf)==(shelfs.size()-1);
+            if (shelves.size() == 0) {
+                return false;
+            }
+            if (shelfIndex == shelves.size()-1 && bookIndex >= shelves.get(shelfIndex).getBooks().size()-1) {
+                return false;
+            }
+            return true;
         }
 
         @Override
         public Book next() {
-            if (indexInShelf >= booksInCurrentShelf.size()-1) {
-                if (!hasNext()) {
-                    return null;
-                }
-                currentShelf = shelfs.get(shelfs.indexOf(currentShelf)+1);
-                booksInCurrentShelf = currentShelf.getBooks();
-                indexInShelf = 0;
+            if (!hasNext()) {
+                return null;
             }
-            return next();
+            Book b = shelves.get(shelfIndex).getBooks().get(shelfIndex);
+            if (shelves.get(shelfIndex).getBooks().size()-1 == bookIndex) {
+                shelfIndex++;
+                bookIndex=0;
+            }
+            return b;
         }
+    }
+
+    public static void main(String[] args) {
+        Library l = new Library();
+        Iterator<Book> it = l.iterator();
     }
 }
